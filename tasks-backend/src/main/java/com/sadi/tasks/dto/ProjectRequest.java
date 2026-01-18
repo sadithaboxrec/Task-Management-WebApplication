@@ -10,13 +10,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class TaskRequest {
+public class ProjectRequest {
 
     private Long Id;
 
     @NotBlank(message= "Project Name is required")
     @Size(max = 200,message = "Project Name must be less than 200 characters")
-    private String title;
+    private String name;
 
     @Size(max = 500,message = "Description must be less than 500 characters")
     private String description;
@@ -28,7 +28,7 @@ public class TaskRequest {
     private Priority priority;
 
     @FutureOrPresent(message = "Due date must be future or present from today")
+    private LocalDateTime startDate;
+    @FutureOrPresent(message = "Due date must be future or present from today")
     private LocalDateTime dueDate;
-
-
 }

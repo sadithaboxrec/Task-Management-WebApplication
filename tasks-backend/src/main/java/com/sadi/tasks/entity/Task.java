@@ -25,6 +25,7 @@ public class Task {
     @NotBlank(message= "Task Title is required")
     private String title;
 
+    @Column(length = 1000)
     private String description;
 
     @NotNull

@@ -26,6 +26,7 @@ public class Project {
     @NotBlank(message= "Project Name is required")
     private String name;
 
+    @Column(length = 1000)
     private String description;
 
     @NotNull
