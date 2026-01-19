@@ -30,7 +30,7 @@ public class SecurityFilterConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers("api/auth/**").permitAll()
+                        req.requestMatchers("/api/v1/auth/**").permitAll()   //Spring Security 6+ / Boot 4, request matchers must start with /.
                                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);

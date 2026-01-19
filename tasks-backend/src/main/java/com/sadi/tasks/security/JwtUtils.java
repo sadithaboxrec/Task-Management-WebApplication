@@ -31,7 +31,7 @@ public class JwtUtils {
         this.secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    private String generateToken(String username) {
+    public String generateToken(String username) {
 
         return Jwts.builder()
                 .subject(username)
