@@ -21,8 +21,8 @@ public class ProjectRequest {
     @Size(max = 500,message = "Description must be less than 500 characters")
     private String description;
 
-    @NotNull(message = "Completed status is required")
-    private boolean completed;
+ //   @NotNull(message = "Completed status is required")
+    private Boolean completed;
 
     @NotNull(message = "Priority is required")
     private Priority priority;
