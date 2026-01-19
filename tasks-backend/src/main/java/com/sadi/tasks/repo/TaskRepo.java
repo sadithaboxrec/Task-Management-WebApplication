@@ -10,10 +10,10 @@ import java.util.List;
 
 public interface TaskRepo extends JpaRepository<Task, Long> {
 
-    List<Task> findByName(String User, Sort sort);
+    List<Task> findByTitle(String title, Sort sort);
 
-    List<Task> findByCompletedAndUser(boolean completed, User user);
+    List<Task> findByCompletedAndProject_User(boolean completed, User user);
 
-    List<Task> findByPriorityAndUser(Priority priority, User user, Sort sort);
+    List<Task> findByPriorityAndProject_User(Priority priority, User user, Sort sort);
 
 }

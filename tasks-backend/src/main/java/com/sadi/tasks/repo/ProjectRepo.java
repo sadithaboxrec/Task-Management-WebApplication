@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ProjectRepo extends JpaRepository<Project, Long> {
 
-    List<Project> findByName(String User, Sort sort);
+    List<Project> findByName(String name, Sort sort);
 
     List<Project> findByCompletedAndUser(boolean completed, User user);
 
