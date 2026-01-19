@@ -12,6 +12,8 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
 
     List<Project> findByName(String name, Sort sort);
 
+    List<Project> findByUser(User user, Sort sort);
+
     List<Project> findByCompletedAndUser(boolean completed, User user);
 
     List<Project> findByPriorityAndUser(Priority priority, User user,Sort sort);
