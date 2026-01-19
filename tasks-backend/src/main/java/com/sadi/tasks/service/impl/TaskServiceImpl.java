@@ -6,6 +6,7 @@ import com.sadi.tasks.entity.Project;
 import com.sadi.tasks.entity.Task;
 import com.sadi.tasks.entity.User;
 import com.sadi.tasks.enums.Priority;
+import com.sadi.tasks.exceptions.BadRequestException;
 import com.sadi.tasks.exceptions.NotFoundException;
 import com.sadi.tasks.repo.ProjectRepo;
 import com.sadi.tasks.repo.TaskRepo;
@@ -37,7 +38,16 @@ public class TaskServiceImpl implements TaskService {
         Project project = projectRepo.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("Project Not Found"));
 
-        // Validate ownership: ensure current user owns the project
+        // check date collision
+        if (taskRequest.getDueDate() != null &&
+                project.getStartDate() != null &&
+                taskRequest.getDueDate().isBefore(project.getStartDate())) {
+
+            throw new BadRequestException(
+                    "Task cannot start before project start date"
+            );
+        }
+
         User currentUser = userService.getCurrentLoggedUser();
         if (!project.getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You do not have permission to add tasks to this project");
@@ -70,17 +80,41 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepo.findById(taskRequest.getId())
                 .orElseThrow(() -> new NotFoundException("Task Not Found"));
 
-        // Validate ownership
+
         User currentUser = userService.getCurrentLoggedUser();
         if (!task.getProject().getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You do not have permission to update this task");
         }
 
-        if (taskRequest.getTitle() != null) task.setTitle(taskRequest.getTitle());
-        if (taskRequest.getDescription() != null) task.setDescription(taskRequest.getDescription());
+        if (taskRequest.getTitle() != null) {
+            task.setTitle(taskRequest.getTitle());
+        }
+
+        if (taskRequest.getDescription() != null) {
+            task.setDescription(taskRequest.getDescription());
+        }
+
         task.setCompleted(taskRequest.isCompleted());
-        if (taskRequest.getPriority() != null) task.setPriority(taskRequest.getPriority());
-        if (taskRequest.getDueDate() != null) task.setDueDate(taskRequest.getDueDate());
+
+        if (taskRequest.getPriority() != null) {
+            task.setPriority(taskRequest.getPriority());
+        }
+
+        if (taskRequest.getDueDate() != null) {
+
+            Project project = task.getProject();
+
+            if (project.getStartDate() != null &&
+                    taskRequest.getDueDate().isBefore(project.getStartDate())) {
+
+                throw new BadRequestException(
+                        "Task due date cannot be before project start date"
+                );
+            }
+
+            task.setDueDate(taskRequest.getDueDate());
+        }
+
 
         task.setUpdatedAt(LocalDateTime.now());
 
@@ -100,7 +134,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepo.findById(taskId)
                 .orElseThrow(() -> new NotFoundException("Task Not Found"));
 
-        // Validate ownership
+
         User currentUser = userService.getCurrentLoggedUser();
         if (!task.getProject().getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You do not have permission to delete this task");
@@ -121,7 +155,7 @@ public class TaskServiceImpl implements TaskService {
         Project project = projectRepo.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("Project Not Found"));
 
-        // Validate ownership
+
         User currentUser = userService.getCurrentLoggedUser();
         if (!project.getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You do not have permission to view tasks for this project");
