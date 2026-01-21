@@ -11,5 +11,4 @@ export const routes: Routes = [
   {path:'login', component:Login},
   {path :'projects', component:Projects},
   { path: 'projects/:projectId/tasks', component: Tasks },
-  {path:'tasks' ,component:Tasks}
 ];

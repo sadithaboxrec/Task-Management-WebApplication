@@ -42,63 +42,130 @@ export class Projects {
   /**
    * Fetches all projects for the current user
    */
+  // fetchProjects(): void {
+  //   this.api.getAllProjects().subscribe({
+  //     next: (res) => {
+  //       if (res.statusCode === 200) {
+  //         // Convert Id → id for Angular
+  //         this.projects = res.data.map((p: any) => ({
+  //           id: p.Id,
+  //           title: p.name,
+  //           description: p.description,
+  //           priority: p.priority,
+  //           completed: p.completed,
+  //           dueDate: p.dueDate,
+  //           createdAt: p.createdAt
+  //         }));
+  //         this.filteredProjects = [...this.projects];
+  //       } else {
+  //         this.error = res.message || 'Failed to fetch projects';
+  //       }
+  //     },
+  //     error: (error) => {
+  //       this.error = error.error?.message || error.message || 'Error fetching projects';
+  //     }
+  //   });
+  // }
+
+  // loading: boolean = true;
+  //
+  // fetchProjects(): void {
+  //   this.loading = true;
+  //   this.api.getAllProjects().subscribe({
+  //     next: (res) => {
+  //       if (res.statusCode === 200) {
+  //         this.projects = res.data.map((p: any) => ({
+  //           id: p.Id,
+  //           title: p.name,
+  //           description: p.description,
+  //           priority: p.priority,
+  //           completed: p.completed,
+  //           dueDate: p.dueDate,
+  //           createdAt: p.createdAt
+  //         }));
+  //         this.filteredProjects = [...this.projects];
+  //       } else {
+  //         this.error = res.message || 'Failed to fetch projects';
+  //       }
+  //       this.loading = false;
+  //     },
+  //     error: (err) => {
+  //       this.error = err.error?.message || err.message || 'Error fetching projects';
+  //       this.loading = false;
+  //     }
+  //   });
+  // }
+
+
+  // fetchProjects(): void {
+  //   this.api.getAllProjects().subscribe(res => {
+  //     id: p.Id
+  //     this.projects = res.data;
+  //     this.filteredProjects = [...this.projects];
+  //   });
+  // }
+
+
   fetchProjects(): void {
-    this.api.getAllProjects().subscribe({
-      next: (res) => {
-        if (res.statusCode === 200) {
-          // Convert Id → id for Angular
-          this.projects = res.data.map((p: any) => ({
-            id: p.Id,
-            title: p.name,
-            description: p.description,
-            priority: p.priority,
-            completed: p.completed,
-            dueDate: p.dueDate,
-            createdAt: p.createdAt
-          }));
-          this.filteredProjects = [...this.projects];
-        } else {
-          this.error = res.message || 'Failed to fetch projects';
-        }
-      },
-      error: (error) => {
-        this.error = error.error?.message || error.message || 'Error fetching projects';
-      }
+    this.api.getAllProjects().subscribe(res => {
+
+      this.projects = res.data.map((p: any) => ({
+        ...p,        // keep all backend fields
+        id: p.Id     // 👈 normalize Id → id
+      }));
+
+      this.filteredProjects = [...this.projects];
     });
   }
-
 
   /**
    * Applies the current filters to the project list
    */
+  // applyFilters(): void {
+  //   let result = [...this.projects];
+  //
+  //   // Filter by completion status
+  //   if (this.completionFilter !== 'ALL') {
+  //     this.api.getProjectsByCompletionStatus(this.completionFilter === 'COMPLETED').subscribe({
+  //       next: (res) => {
+  //         if (res.statusCode === 200) {
+  //           result = res.data;
+  //
+  //           if (this.priorityFilter !== 'ALL') {
+  //             this.applyPriorityFilter(result);
+  //           } else {
+  //             this.filteredProjects = result;
+  //           }
+  //         }
+  //       },
+  //       error: (error) => {
+  //         this.error = error.error?.message || error.message || 'Error applying completion filter';
+  //       }
+  //     });
+  //   } else if (this.priorityFilter !== 'ALL') {
+  //     // Only filter by priority
+  //     this.applyPriorityFilter(result);
+  //   } else {
+  //     this.filteredProjects = result;
+  //   }
+  // }
+
   applyFilters(): void {
-    let result = [...this.projects];
+    this.filteredProjects = this.projects.filter(project => {
 
-    // Filter by completion status
-    if (this.completionFilter !== 'ALL') {
-      this.api.getProjectsByCompletionStatus(this.completionFilter === 'COMPLETED').subscribe({
-        next: (res) => {
-          if (res.statusCode === 200) {
-            result = res.data;
+      const completionMatch =
+        this.completionFilter === 'ALL' ||
+        (this.completionFilter === 'COMPLETED' && project.completed) ||
+        (this.completionFilter === 'PENDING' && !project.completed);
 
-            if (this.priorityFilter !== 'ALL') {
-              this.applyPriorityFilter(result);
-            } else {
-              this.filteredProjects = result;
-            }
-          }
-        },
-        error: (error) => {
-          this.error = error.error?.message || error.message || 'Error applying completion filter';
-        }
-      });
-    } else if (this.priorityFilter !== 'ALL') {
-      // Only filter by priority
-      this.applyPriorityFilter(result);
-    } else {
-      this.filteredProjects = result;
-    }
+      const priorityMatch =
+        this.priorityFilter === 'ALL' ||
+        project.priority === this.priorityFilter;
+
+      return completionMatch && priorityMatch;
+    });
   }
+
 
   /**
    * Helper method to apply priority filter

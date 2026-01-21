@@ -1,133 +1,133 @@
-<div class="p-6 bg-gray-50 min-h-screen mt-24">
+ <div class="p-6 bg-gray-50 min-h-screen mt-24">
 
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-semibold text-gray-800">My Projects</h2>
-    <a
-      routerLink="/projects/add"
-      class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-    >
-      + Add New Project
-    </a>
-  </div>
-
-
-  <div *ngIf="error" class="mb-4 p-3 bg-red-100 text-red-700 rounded">
-    {{ error }}
-  </div>
-
-
-  <div class="flex flex-wrap gap-4 mb-6">
-    <!-- Priority Filter -->
-    <div class="flex flex-col">
-      <label for="priority-filter" class="mb-1 font-medium text-gray-700">Priority:</label>
-      <select
-        id="priority-filter"
-        [(ngModel)]="priorityFilter"
-        (change)="applyFilters()"
-        class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-gray-800">My Projects</h2>
+      <a
+        routerLink="/projects/add"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
       >
-        <option value="ALL">All Priorities</option>
-        <option value="HIGH">High</option>
-        <option value="MEDIUM">Medium</option>
-        <option value="LOW">Low</option>
-      </select>
+        + Add New Project
+      </a>
     </div>
 
-    <!-- Completion Filter -->
-    <div class="flex flex-col">
-      <label for="completion-filter" class="mb-1 font-medium text-gray-700">Status:</label>
-      <select
-        id="completion-filter"
-        [(ngModel)]="completionFilter"
-        (change)="applyFilters()"
-        class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="ALL">All Projects</option>
-        <option value="COMPLETED">Completed</option>
-        <option value="PENDING">Pending</option>
-      </select>
+
+    <div *ngIf="error" class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+      {{ error }}
     </div>
-  </div>
 
-  <!-- Projects List -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <ng-container *ngIf="filteredProjects.length > 0; else noProjects">
-      <div
-        *ngFor="let project of filteredProjects"
-        class="bg-white shadow rounded p-4 flex flex-col justify-between border-l-4"
-        [ngClass]="{
-          'border-green-500': project.completed,
-          'border-gray-300': !project.completed
-        }"
-      >
 
-        <div>
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-lg font-semibold text-gray-800">{{ project.title }}</h3>
-            <span
-              class="px-2 py-1 rounded text-xs font-semibold"
+    <div class="flex flex-wrap gap-4 mb-6">
+      <!-- Priority Filter -->
+      <div class="flex flex-col">
+        <label for="priority-filter" class="mb-1 font-medium text-gray-700">Priority:</label>
+        <select
+          id="priority-filter"
+          [(ngModel)]="priorityFilter"
+          (change)="applyFilters()"
+          class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="ALL">All Priorities</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+      </div>
+
+      <!-- Completion Filter -->
+      <div class="flex flex-col">
+        <label for="completion-filter" class="mb-1 font-medium text-gray-700">Status:</label>
+        <select
+          id="completion-filter"
+          [(ngModel)]="completionFilter"
+          (change)="applyFilters()"
+          class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="ALL">All Projects</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="PENDING">Pending</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Projects List -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <ng-container *ngIf="filteredProjects.length > 0; else noProjects">
+        <div
+          *ngFor="let project of filteredProjects"
+          class="bg-white shadow rounded p-4 flex flex-col justify-between border-l-4"
+          [ngClass]="{
+            'border-green-500': project.completed,
+            'border-gray-300': !project.completed
+          }"
+        >
+
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-lg font-semibold text-gray-800">{{ project.title }}</h3>
+              <span
+                class="px-2 py-1 rounded text-xs font-semibold"
+                [ngClass]="{
+                  'bg-red-100 text-red-700': project.priority === 'HIGH',
+                  'bg-yellow-100 text-yellow-700': project.priority === 'MEDIUM',
+                  'bg-green-100 text-green-700': project.priority === 'LOW'
+                }"
+              >
+                {{ project.priority }}
+              </span>
+            </div>
+            <p class="text-gray-600 mb-3">{{ project.description }}</p>
+            <div class="flex justify-between text-sm text-gray-500">
+              <span>Due: {{ project.dueDate | date:'mediumDate' }}</span>
+              <span>Created: {{ project.createdAt | date:'mediumDate' }}</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-4 flex flex-col sm:flex-row gap-2">
+            <button
+              (click)="toggleComplete(project)"
+              class="flex-1 px-3 py-2 rounded text-white font-medium transition"
               [ngClass]="{
-                'bg-red-100 text-red-700': project.priority === 'HIGH',
-                'bg-yellow-100 text-yellow-700': project.priority === 'MEDIUM',
-                'bg-green-100 text-green-700': project.priority === 'LOW'
+                'bg-green-600 hover:bg-green-700': project.completed,
+                'bg-blue-600 hover:bg-blue-700': !project.completed
               }"
             >
-              {{ project.priority }}
-            </span>
-          </div>
-          <p class="text-gray-600 mb-3">{{ project.description }}</p>
-          <div class="flex justify-between text-sm text-gray-500">
-            <span>Due: {{ project.dueDate | date:'mediumDate' }}</span>
-            <span>Created: {{ project.createdAt | date:'mediumDate' }}</span>
+              {{ project.completed ? '✓ Completed' : 'Mark Complete' }}
+            </button>
+
+            <a
+              [routerLink]="['/projects/edit', project.id]"
+              class="flex-1 px-3 py-2 bg-gray-300 hover:bg-gray-400 rounded text-gray-800 font-medium text-center"
+            >
+              Edit
+            </a>
+
+            <!-- View Tasks Button -->
+            <a
+              [routerLink]="['/projects', project.id, 'tasks']"
+              class="flex-1 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center transition"
+            >
+              View Tasks
+            </a>
+
+
+
+
           </div>
         </div>
+      </ng-container>
 
-        <!-- Actions -->
-        <div class="mt-4 flex flex-col sm:flex-row gap-2">
+      <!-- No Projects Template -->
+      <ng-template #noProjects>
+        <div class="col-span-full text-center py-12">
+          <p class="text-gray-500 mb-4">No projects found matching your filters.</p>
           <button
-            (click)="toggleComplete(project)"
-            class="flex-1 px-3 py-2 rounded text-white font-medium transition"
-            [ngClass]="{
-              'bg-green-600 hover:bg-green-700': project.completed,
-              'bg-blue-600 hover:bg-blue-700': !project.completed
-            }"
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            (click)="resetFilters()"
           >
-            {{ project.completed ? '✓ Completed' : 'Mark Complete' }}
+            Reset Filters
           </button>
-
-          <a
-            [routerLink]="['/projects/edit', project.id]"
-            class="flex-1 px-3 py-2 bg-gray-300 hover:bg-gray-400 rounded text-gray-800 font-medium text-center"
-          >
-            Edit
-          </a>
-
-          <!-- View Tasks Button -->
-          <a
-            [routerLink]="['/projects', project.id, 'tasks']"
-            class="flex-1 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center transition"
-          >
-            View Tasks
-          </a>
-
-
-
-
         </div>
-      </div>
-    </ng-container>
-
-    <!-- No Projects Template -->
-    <ng-template #noProjects>
-      <div class="col-span-full text-center py-12">
-        <p class="text-gray-500 mb-4">No projects found matching your filters.</p>
-        <button
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          (click)="resetFilters()"
-        >
-          Reset Filters
-        </button>
-      </div>
-    </ng-template>
+      </ng-template>
+    </div>
   </div>
-</div>

@@ -20,18 +20,37 @@ export class Tasks {
   priorityFilter: string = 'ALL';
   completionFilter: string = 'ALL';
 
+  // constructor(
+  //   private api: Api,
+  //   private route: ActivatedRoute,
+  //   private router: Router
+  // ) {
+  //   // Get projectId from route params and fetch tasks
+  //   this.route.params.subscribe(params => {
+  //     this.projectId = +params['projectId']; // or parseInt(params['projectId'], 10)
+  //     console.log('Project ID:', this.projectId);
+  //     this.fetchTasks();
+  //   });
+  // }
+
   constructor(
     private api: Api,
     private route: ActivatedRoute,
     private router: Router
   ) {
-    // Get projectId from route params and fetch tasks
     this.route.params.subscribe(params => {
-      this.projectId = +params['projectId']; // or parseInt(params['projectId'], 10)
-      console.log('Project ID:', this.projectId);
+      const id = Number(params['projectId']);
+
+      if (!id || isNaN(id)) {
+        this.error = 'Invalid project ID';
+        return;
+      }
+
+      this.projectId = id;
       this.fetchTasks();
     });
   }
+
 
   fetchTasks(): void {
     this.api.getTasksByProject(this.projectId).subscribe({
@@ -49,30 +68,48 @@ export class Tasks {
     });
   }
 
-  applyFilters(): void {
-    let result = [...this.tasks];
+  // applyFilters(): void {
+  //   let result = [...this.tasks];
+  //
+  //   // Filter by completion status first
+  //   if (this.completionFilter !== 'ALL') {
+  //     this.api.getTasksByCompletionStatus(this.projectId, this.completionFilter === 'COMPLETED')
+  //       .subscribe({
+  //         next: res => {
+  //           if (res.statusCode === 200) {
+  //             result = res.data;
+  //             if (this.priorityFilter !== 'ALL') this.applyPriorityFilter(result);
+  //             else this.filteredTasks = result;
+  //           }
+  //         },
+  //         error: error => {
+  //           this.error = error.error?.message || error.message || 'Error applying completion filter';
+  //         }
+  //       });
+  //   } else if (this.priorityFilter !== 'ALL') {
+  //     this.applyPriorityFilter(result);
+  //   } else {
+  //     this.filteredTasks = result;
+  //   }
+  // }
 
-    // Filter by completion status first
-    if (this.completionFilter !== 'ALL') {
-      this.api.getTasksByCompletionStatus(this.projectId, this.completionFilter === 'COMPLETED')
-        .subscribe({
-          next: res => {
-            if (res.statusCode === 200) {
-              result = res.data;
-              if (this.priorityFilter !== 'ALL') this.applyPriorityFilter(result);
-              else this.filteredTasks = result;
-            }
-          },
-          error: error => {
-            this.error = error.error?.message || error.message || 'Error applying completion filter';
-          }
-        });
-    } else if (this.priorityFilter !== 'ALL') {
-      this.applyPriorityFilter(result);
-    } else {
-      this.filteredTasks = result;
-    }
+
+  applyFilters(): void {
+    this.filteredTasks = this.tasks.filter(task => {
+
+      const completionMatch =
+        this.completionFilter === 'ALL' ||
+        (this.completionFilter === 'COMPLETED' && task.completed) ||
+        (this.completionFilter === 'PENDING' && !task.completed);
+
+      const priorityMatch =
+        this.priorityFilter === 'ALL' ||
+        task.priority === this.priorityFilter;
+
+      return completionMatch && priorityMatch;
+    });
   }
+
 
   private applyPriorityFilter(currentResult: any[]): void {
     this.api.getTasksByPriority(this.projectId, this.priorityFilter).subscribe({
