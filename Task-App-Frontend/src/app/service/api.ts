@@ -36,8 +36,21 @@ export class Api {
       "Content-Type":"application/json"
     });
   }
+  getUsername(): string | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
 
-                // Register
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.username || payload.sub || payload.email || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+
+
+  // Register
 
   registerUser(body:any):Observable<any>{
     return this.http.post(`${this.API_URL}/auth/register`,body);

@@ -11,11 +11,17 @@ import {Api} from '../../service/api';
 })
 export class Navbar {
 
+
+
   constructor(private readonly api:Api, private router:Router) {
   }
 
   get isAuthenticated():boolean{
     return this.api.isAuthenticated();
+  }
+
+  get username(): string {
+    return this.api.getUsername() ?? 'User';
   }
 
 
